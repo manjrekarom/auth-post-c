@@ -1,0 +1,50 @@
+#include "mgos.h"
+#include <cstdio.h>
+#include "mgos_dht.h"
+#include "mgos_mqtt.h"
+#include "mgos_config.h"
+#include "mgos_net.h"
+
+static void publish_data(void *dht) {
+  int temp = mgos_dht_get_temp(dht);
+  int humid = mgos_dht_get_humidity(dht);
+  char buffer[24];
+  int retT = snprintf (buffer, 24, "%f", temp);
+  
+  int retH = snprintf (buffer, 24, "%f", humid);
+  bool tPub = mgos_mqtt_pub("ESP8266_MO/temp", &temp, (int)sizeof(temp), 1, 0);
+  bool hPub = mgos_mqtt_pub("ESP8266_MO/humidity", &humid, (int)sizeof(humid), 1, 0);
+  if(tPub && hPub) {
+    LOG(LL_INFO, ("Published temp: %d & humidity: %d", temp, humid));
+  }
+  else {
+   LOG(LL_INFO, ("Could not publish!"));
+  }
+}
+
+static void net_cb(enum mgos_net_event ev, const struct mgos_net_event_data *ev_data, void *arg) {
+  switch (ev) {
+    case MGOS_NET_EV_DISCONNECTED:
+      LOG(LL_INFO, ("%s", "Net disconnected"));
+      break;
+    case MGOS_NET_EV_CONNECTING:
+      LOG(LL_INFO, ("%s", "Net connecting..."));
+      break;
+    case MGOS_NET_EV_CONNECTED:
+      LOG(LL_INFO, ("%s", "Net connected"));
+      break;
+    case MGOS_NET_EV_IP_ACQUIRED:
+      LOG(LL_INFO, ("%s", "Net got IP address"));
+      break;
+  }
+
+  (void) ev_data;
+  (void) arg;
+}
+
+enum mgos_app_init_result mgos_app_init(void) {
+  struct mgos_dht *dht = mgos_dht_create(mgos_sys_config_get_app_pin(), DHT22);
+  mgos_set_timer(mgos_sys_config_get_app_interval(), true, publish_data, dht);
+  mgos_net_add_event_handler(net_cb, NULL);
+  return MGOS_APP_INIT_SUCCESS;
+}

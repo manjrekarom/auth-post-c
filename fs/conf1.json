@@ -1,0 +1,27 @@
+{
+  "device": {
+    "id": "ESP8266_MO"
+  },
+  "wifi": {
+    "sta": {
+      "enable": true,
+      "ssid": "ERTS LAB 304_A",
+      "pass": "balstre403"
+    },
+    "ap": {
+      "enable": false
+    }
+  },
+  "mqtt": {
+    "enable": true,
+    "server": "192.168.0.109:1883"
+  },
+  "dash": {
+    "enable": true,
+    "token": "91b708221be9ef411c6c453fef0fa2af"
+  },
+  "http": {
+    "auth_domain": "iot",
+    "auth_file": "htpasswd"
+  }
+}

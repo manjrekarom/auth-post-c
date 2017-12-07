@@ -1,5 +1,5 @@
-author: mongoose-os
-description: A Mongoose OS app skeleton
+author: Omkar Manjrekar
+description: A demo mongoose app that publishes DHT sensor data using MQTT
 version: 1.0
 
 libs_version: ${mos.version}
@@ -9,6 +9,8 @@ mongoose_os_version: ${mos.version}
 # Optional. List of tags for online search.
 tags:
   - c
+  - mqtt
+  - http
 
 # List of files / directories with C sources. No slashes at the end of dir names.
 sources:
@@ -46,6 +48,14 @@ filesystem:
 #  - ["debug.level", 3]
 
 
+config_schema:
+ - ["app", "o", {title: "App custom settings"}]
+ - ["app.dht", "o", {title: "App DHT settings"}]
+ - ["app.dht.pin", "i", 5, {title: "GPIO pin a sensor is attached to"}]
+ - ["app.dht.interval", "i", 5000, {title: "Send readings after each milliseconds"}]
+ - ["app.led", "o", {title: "App LED settings"}]
+ - ["app.led.pin", "i", 2, {title: "Led pin"}]
+
 # List of libraries used by this app, in order of initialisation
 libs:
   - origin: https://github.com/mongoose-os-libs/ca-bundle
@@ -53,6 +63,11 @@ libs:
   - origin: https://github.com/mongoose-os-libs/rpc-service-fs
   - origin: https://github.com/mongoose-os-libs/rpc-uart
   - origin: https://github.com/mongoose-os-libs/wifi
+  - origin: https://github.com/mongoose-os-libs/dht
+  - origin: https://github.com/mongoose-os-libs/http-server
+  - origin: https://github.com/mongoose-os-libs/mqtt
+  - origin: https://github.com/mongoose-os-libs/rpc-service-ota
+  - origin: https://github.com/mongoose-os-libs/dash
 
 # Used by the mos tool to catch mos binaries incompatible with this file format
 manifest_version: 2017-05-18
